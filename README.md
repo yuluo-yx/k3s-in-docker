@@ -5,7 +5,7 @@
 ```shell
 alias mk=make
 
-# k3s.local.Dockerfile 演示
+# k3s.local.Dockerfile 演示，运行之前查看 k3s-bin/README.md.
 mk build-local
 
 cd app && mk deploy
