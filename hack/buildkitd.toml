@@ -1,0 +1,10 @@
+debug = false
+
+[registry."docker.io"]
+  mirrors = ["registry.cn-hangzhou.aliyuncs.com"]
+
+[registry."registry.k8s.io"]
+  mirrors = ["registry.cn-hangzhou.aliyuncs.com"]
+
+[registry."ghcr.io"]
+  mirrors = ["registry.cn-hangzhou.aliyuncs.com"]

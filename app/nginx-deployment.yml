@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx-deployment1
+  namespace: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: registry.cn-hangzhou.aliyuncs.com/aliyun_doker_hub/linux_{{.ARCH}}_nginx:1.28.0
+          ports:
+            - containerPort: 80
+          name: nginx
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: log
+              mountPath: /var/log/nginx
+            - name: html
+              mountPath: /etc/nginx/html
+      volumes:
+        - name: conf
+          configMap:
+            name: nginx-config
+        - name: log
+          emptyDir: {}
+        # 从本地挂载 assets/index.html
+        - name: html
+          hostPath:
+            path: /var/lib/rancher/k3s/app/assets
+            type: DirectoryOrCreate
