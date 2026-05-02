@@ -3,7 +3,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+K3S_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PROJECT_DIR="$(cd "${K3S_DIR}/.." && pwd)"
 
 IMAGE=${IMAGE:-registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s}
 TAG=${TAG:-latest}
@@ -41,7 +42,7 @@ fi
 # 构建参数使用数组，避免路径或镜像名中出现特殊字符时被 shell 拆分。
 BUILD_ARGS=(
   --builder "${BUILDER}"
-  -f "${PROJECT_DIR}/k3s.Dockerfile"
+  -f "${K3S_DIR}/basic/k3s.Dockerfile"
   -t "${IMAGE}:${TAG}"
 )
 

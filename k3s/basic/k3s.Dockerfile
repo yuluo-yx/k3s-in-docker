@@ -12,9 +12,9 @@ FROM registry.cn-hangzhou.aliyuncs.com/aliyun_doker_hub/linux_${TARGETARCH}_k3s:
 
 COPY --from=downloader /tmp/k3s-airgap-images-${TARGETARCH}.tar.zst /var/lib/rancher/k3s/agent/images/
 
-COPY hack/cgroup_pre_detect.sh /bin/cgroup_pre_detect.sh
-COPY hack/iptables_pre_detect.sh /bin/iptables_pre_detect.sh
-COPY hack/install.sh /bin/install.sh
+COPY k3s/hack/cgroup_pre_detect.sh /bin/cgroup_pre_detect.sh
+COPY k3s/hack/iptables_pre_detect.sh /bin/iptables_pre_detect.sh
+COPY k3s/hack/install.sh /bin/install.sh
 
 RUN chmod +x /bin/cgroup_pre_detect.sh \
         && chmod +x /bin/iptables_pre_detect.sh \

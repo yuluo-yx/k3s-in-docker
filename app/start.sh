@@ -3,7 +3,7 @@
 set -e
 
 K3S_SERVER_NAME=nginx-k3s-server
-K3S_IMAGE=registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s:latest
+K3S_IMAGE=${K3S_IMAGE:-registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s:latest}
 K3SPort=${K3SPort:-6443}
 NginxPort=${NginxPort:-58080}
 NginxNodePort=${NginxNodePort:-31090}
@@ -24,14 +24,14 @@ function render() {
 }
 
 function start() {
-  echo "🚀 Starting k3s container (ARCH=${ARCH})..."
+  echo "🚀 Starting k3s container (ARCH=${ARCH}, IMAGE=${K3S_IMAGE})..."
   docker run --privileged --restart=always \
     --name ${K3S_SERVER_NAME} \
     --hostname ${K3S_SERVER_NAME} \
     -p ${K3SPort}:6443 \
     -p ${NginxPort}:${NginxNodePort} \
     -v ${K3S_DATA_DIR}:/var/lib/rancher/k3s \
-    -v ${PROJECT_DIR}/k3s-bin:/var/lib/rancher/k3s/agent/images \
+    -v ${PROJECT_DIR}/k3s/bin:/var/lib/rancher/k3s/agent/images \
     -v ${SCRIPT_DIR}/assets:/var/lib/rancher/k3s/app/assets \
     -d ${K3S_IMAGE}
 }

@@ -7,5 +7,11 @@ make deploy
 
 make curl
 
+# 使用增强镜像部署，容器内包含 curl/jq/vim/openssl/ssh/zsh/bash/typo 等运维工具。
+make deploy-enhance
+
+# 进入容器，优先使用 zsh，其次 bash/sh。
+make shell
+
 make remove
 ```

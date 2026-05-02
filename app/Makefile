@@ -1,12 +1,23 @@
 K3S_SERVER_NAME ?= nginx-k3s-server
 K3S_DATA_DIR ?= /tmp/$(K3S_SERVER_NAME)
+K3S_IMAGE ?= registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s:latest
+K3S_ENHANCE_IMAGE ?= registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s:enhance
 NginxPort ?= 58080
 NginxNodePort ?= 31090
 
 .PHONY: deploy
 deploy: ## 部署 nginx app 到 k3s
 	chmod +x start.sh
-	K3SPort=6443 K3S_DATA_DIR=$(K3S_DATA_DIR) NginxPort=$(NginxPort) NginxNodePort=$(NginxNodePort) zsh start.sh
+	K3S_IMAGE=$(K3S_IMAGE) K3SPort=6443 K3S_DATA_DIR=$(K3S_DATA_DIR) NginxPort=$(NginxPort) NginxNodePort=$(NginxNodePort) zsh start.sh
+
+.PHONY: deploy-enhance
+deploy-enhance: ## 使用增强镜像部署 nginx app 到 k3s
+	chmod +x start.sh
+	K3S_IMAGE=$(K3S_ENHANCE_IMAGE) K3SPort=6443 K3S_DATA_DIR=$(K3S_DATA_DIR) NginxPort=$(NginxPort) NginxNodePort=$(NginxNodePort) zsh start.sh
+
+.PHONY: shell
+shell: ## 进入 k3s 容器，优先使用 zsh，其次 bash/sh
+	docker exec -it $(K3S_SERVER_NAME) sh -lc 'exec "$$(command -v zsh || command -v bash || command -v sh)"'
 
 .PHONY: curl
 curl: ## 测试 nginx 服务
