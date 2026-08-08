@@ -2,6 +2,26 @@ IMAGE ?= registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s
 TAG  ?= latest
 ENHANCE_TAG ?= enhance
 
+.PHONY: deploy-nginx
+deploy-nginx: ## 启动 nginx-k3s-server 并部署 nginx
+	$(MAKE) -C servers/nginx-k3s-server deploy
+
+.PHONY: deploy-kueue
+deploy-kueue: ## 启动 kueue-k3s-server 并安装 Kueue
+	$(MAKE) -C servers/kueue-k3s-server deploy
+
+.PHONY: status-servers
+status-servers: ## 检查全部 k3s server
+	$(MAKE) -C servers status
+
+.PHONY: remove-nginx
+remove-nginx: ## 删除 nginx-k3s-server，保留数据卷
+	$(MAKE) -C servers/nginx-k3s-server remove
+
+.PHONY: remove-kueue
+remove-kueue: ## 删除 kueue-k3s-server，保留数据卷
+	$(MAKE) -C servers/kueue-k3s-server remove
+
 .PHONY: build
 build: ## 构建当前架构的 k3s 镜像
 	bash k3s/hack/build.sh

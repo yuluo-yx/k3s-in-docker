@@ -17,7 +17,8 @@ if [ -n "$missing_mods" ]; then
 fi
 
 sh /bin/cgroup_pre_detect.sh
-sh /bin/iptables_pre_detect.sh
+# 需要在当前 shell 中执行，使 IPTABLES_MODE 能传递给 k3s 进程。
+. /bin/iptables_pre_detect.sh
 
 # 在 mac orbstack 运行时，kubelet 报错 “error mounting "proc" to rootfs at "/proc" ... rootfs/proc: read-only file system” runc overlayfs 兼容性问题
 exec /bin/k3s server --snapshotter native --disable metrics-server --disable-cloud-controller --disable-network-policy

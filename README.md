@@ -1,29 +1,53 @@
 # k3s-in-docker
 
-用 Docker 快速启动一个 k3s（轻量级 Kubernetes）集群，主要用于本地开发和服务测试。
+本项目使用 Docker 启动独立的 k3s 集群，适用于本地开发和服务测试。仓库内置 nginx 与 Kueue 两套实例配置。
 
-目录说明：
+## 目录结构
 
-- `k3s/basic/`：基础镜像 Dockerfile，包括在线下载 airgap 包的 `k3s.Dockerfile` 和使用本地包的 `k3s.local.Dockerfile`。
-- `k3s/enhance/`：增强镜像 Dockerfile 与 shell 定制，容器内包含常用运维工具、vim 配置、typo 命令纠错和 zsh/bash 配置。
-- `k3s/hack/`：basic/enhance 共用的构建辅助、k3s 启动和宿主兼容性检测脚本。
-- `k3s/bin/`：k3s airgap 镜像包目录，避免和根目录 Go 工具 `bin/` 混淆。
+- `k3s/basic/`：基础镜像 Dockerfile。
+- `k3s/enhance/`：包含常用运维工具的增强镜像。
+- `k3s/hack/`：镜像构建、k3s 启动和宿主兼容性检测脚本。
+- `k3s/bin/`：k3s airgap 镜像包。
+- `servers/`：全部 k3s 实例的配置、清单和统一操作入口。
+- `bin/`：访问 k3s 的 Go 命令行工具。
+
+## 快速开始
+
+先按照 [k3s/bin/README.md](k3s/bin/README.md) 准备当前架构的 airgap 包，再构建基础镜像：
 
 ```shell
-alias mk=make
+make build-local
+```
 
-# k3s/basic/k3s.local.Dockerfile 演示，运行之前查看 k3s/bin/README.md.
-mk build-local
+启动 nginx 实例：
 
-cd app && mk deploy
+```shell
+make deploy-nginx
+curl http://localhost:58080/
+```
 
-# mk deploy 运行完成执行
-mk curl
+启动 Kueue 实例：
 
-# 构建带 curl/jq/vim/openssl/ssh/zsh/bash/typo 等运维工具的增强镜像
-cd .. && mk build-enhance
+```shell
+make build-enhance
+make deploy-kueue
+make -C servers/kueue-k3s-server smoke-test
+```
 
-# 使用增强镜像部署，并进入容器交互式排查
-cd app && mk deploy-enhance
-mk shell
+统一检查两个实例：
+
+```shell
+make status-servers
+```
+
+详细说明参见 [servers/README.md](servers/README.md)。
+
+## 增强镜像
+
+增强镜像包含 curl、jq、vim、OpenSSL、SSH、Zsh、Bash 和 typo 等工具：
+
+```shell
+make build-enhance
+make -C servers/nginx-k3s-server deploy-enhance
+make -C servers/nginx-k3s-server shell
 ```

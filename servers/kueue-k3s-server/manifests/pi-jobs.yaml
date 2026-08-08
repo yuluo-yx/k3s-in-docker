@@ -1,0 +1,152 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-job-1
+  namespace: default
+  labels:
+    demo: kueue-pi
+    kueue.x-k8s.io/queue-name: default
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        demo: kueue-pi
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pi
+          image: rancher/klipper-helm:v0.9.17-build20260422
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              echo "${JOB_NAME}: 开始计算 π"
+              awk 'BEGIN {
+                terms = 200000
+                pi = 0
+                sign = 1
+                for (i = 0; i < terms; i++) {
+                  pi += sign / (2 * i + 1)
+                  sign = -sign
+                }
+                printf("pi=%.10f terms=%d\n", 4 * pi, terms)
+              }'
+              sleep 12
+              echo "${JOB_NAME}: 计算完成"
+          env:
+            - name: JOB_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "3"
+              memory: 128Mi
+            limits:
+              cpu: "3"
+              memory: 256Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-job-2
+  namespace: default
+  labels:
+    demo: kueue-pi
+    kueue.x-k8s.io/queue-name: default
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        demo: kueue-pi
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pi
+          image: rancher/klipper-helm:v0.9.17-build20260422
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              echo "${JOB_NAME}: 开始计算 π"
+              awk 'BEGIN {
+                terms = 200000
+                pi = 0
+                sign = 1
+                for (i = 0; i < terms; i++) {
+                  pi += sign / (2 * i + 1)
+                  sign = -sign
+                }
+                printf("pi=%.10f terms=%d\n", 4 * pi, terms)
+              }'
+              sleep 12
+              echo "${JOB_NAME}: 计算完成"
+          env:
+            - name: JOB_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "3"
+              memory: 128Mi
+            limits:
+              cpu: "3"
+              memory: 256Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-job-3
+  namespace: default
+  labels:
+    demo: kueue-pi
+    kueue.x-k8s.io/queue-name: default
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        demo: kueue-pi
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: pi
+          image: rancher/klipper-helm:v0.9.17-build20260422
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              echo "${JOB_NAME}: 开始计算 π"
+              awk 'BEGIN {
+                terms = 200000
+                pi = 0
+                sign = 1
+                for (i = 0; i < terms; i++) {
+                  pi += sign / (2 * i + 1)
+                  sign = -sign
+                }
+                printf("pi=%.10f terms=%d\n", 4 * pi, terms)
+              }'
+              sleep 12
+              echo "${JOB_NAME}: 计算完成"
+          env:
+            - name: JOB_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "3"
+              memory: 128Mi
+            limits:
+              cpu: "3"
+              memory: 256Mi

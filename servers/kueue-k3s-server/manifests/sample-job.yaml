@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kueue-sample
+  namespace: default
+  labels:
+    kueue.x-k8s.io/queue-name: default
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: sample
+          # 使用 k3s airgap 包自带镜像，避免 smoke test 依赖外部镜像仓库。
+          image: rancher/klipper-helm:v0.9.17-build20260422
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - echo 'Kueue admitted this Job.' && sleep 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
