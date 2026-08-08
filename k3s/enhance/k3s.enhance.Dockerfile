@@ -31,6 +31,8 @@ RUN apk add --initdb --no-cache \
         tzdata \
         vim \
         zsh \
+        zsh-autosuggestions \
+        zsh-syntax-highlighting \
     && update-ca-certificates \
     && mkdir -p /etc/profile.d /root/.kube /var/log \
     && if [ -f /etc/passwd ]; then \

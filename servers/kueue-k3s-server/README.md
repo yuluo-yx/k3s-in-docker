@@ -4,7 +4,7 @@
 
 本实例运行独立 k3s 集群，并安装 Kubernetes 原生作业队列 Kueue。实例使用 Kueue `v0.19.0`。
 
-容器默认使用增强镜像。镜像包含 vim、typo、curl、jq、OpenSSL、SSH、Zsh 和 Bash 等常用工具。
+容器默认使用增强镜像。镜像包含 vim、typo、curl、jq、OpenSSL、SSH、Zsh 和 Bash 等常用工具。Zsh 提供彩色双行提示符、命令高亮、自动建议和 kubectl 常用别名。
 
 Kueue 要求 Kubernetes `v1.29` 或更高版本。本项目的 k3s `v1.35.4+k3s1` 满足要求。
 
