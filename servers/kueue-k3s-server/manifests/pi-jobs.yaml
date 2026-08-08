@@ -24,16 +24,13 @@ spec:
           args:
             - |
               echo "${JOB_NAME}: 开始计算 π"
-              awk 'BEGIN {
-                terms = 200000
-                pi = 0
-                sign = 1
-                for (i = 0; i < terms; i++) {
-                  pi += sign / (2 * i + 1)
-                  sign = -sign
-                }
-                printf("pi=%.10f terms=%d\n", 4 * pi, terms)
-              }'
+              # 使用 bc 任意精度运算，并增加 10 位保护精度。
+              digits=100
+              guard_digits=$((digits + 10))
+              pi="$(printf 'scale=%s; p=4*a(1); scale=%s; p/1\n' \
+                "${guard_digits}" "${digits}" | \
+                BC_LINE_LENGTH=0 bc -l)"
+              printf 'pi=%s digits=%s\n' "${pi}" "${digits}"
               sleep 12
               echo "${JOB_NAME}: 计算完成"
           env:
@@ -75,16 +72,13 @@ spec:
           args:
             - |
               echo "${JOB_NAME}: 开始计算 π"
-              awk 'BEGIN {
-                terms = 200000
-                pi = 0
-                sign = 1
-                for (i = 0; i < terms; i++) {
-                  pi += sign / (2 * i + 1)
-                  sign = -sign
-                }
-                printf("pi=%.10f terms=%d\n", 4 * pi, terms)
-              }'
+              # 使用 bc 任意精度运算，并增加 10 位保护精度。
+              digits=100
+              guard_digits=$((digits + 10))
+              pi="$(printf 'scale=%s; p=4*a(1); scale=%s; p/1\n' \
+                "${guard_digits}" "${digits}" | \
+                BC_LINE_LENGTH=0 bc -l)"
+              printf 'pi=%s digits=%s\n' "${pi}" "${digits}"
               sleep 12
               echo "${JOB_NAME}: 计算完成"
           env:
@@ -126,16 +120,13 @@ spec:
           args:
             - |
               echo "${JOB_NAME}: 开始计算 π"
-              awk 'BEGIN {
-                terms = 200000
-                pi = 0
-                sign = 1
-                for (i = 0; i < terms; i++) {
-                  pi += sign / (2 * i + 1)
-                  sign = -sign
-                }
-                printf("pi=%.10f terms=%d\n", 4 * pi, terms)
-              }'
+              # 使用 bc 任意精度运算，并增加 10 位保护精度。
+              digits=100
+              guard_digits=$((digits + 10))
+              pi="$(printf 'scale=%s; p=4*a(1); scale=%s; p/1\n' \
+                "${guard_digits}" "${digits}" | \
+                BC_LINE_LENGTH=0 bc -l)"
+              printf 'pi=%s digits=%s\n' "${pi}" "${digits}"
               sleep 12
               echo "${JOB_NAME}: 计算完成"
           env:
