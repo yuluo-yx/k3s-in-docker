@@ -23,6 +23,46 @@ make deploy
 
 k3s API 地址为 `https://localhost:6444`。
 
+## 远程部署与访问
+
+在运行 Docker 的服务器上准备与服务器架构匹配的 airgap 包。启动时，将客户端访问的 IP 地址或域名加入 API 证书：
+
+```shell
+make deploy K3S_TLS_SAN=<server-ip-or-dns> K3S_API_PORT=6444 K3S_CPUS=1 K3S_MEMORY=2g
+```
+
+`K3S_CPUS` 和 `K3S_MEMORY` 可限制整个 k3s 容器的 CPU 和内存，包含控制平面及全部 Pod。示例上限为 1 核 CPU、2 GiB 内存，实际值需要根据宿主机余量和计划负载调整；两项留空时沿用 Docker 默认值。Docker 的限制不会自动缩减 Kueue 队列配额，应同时调整队列配置。
+
+`K3S_TLS_SAN`、`K3S_CPUS` 和 `K3S_MEMORY` 仅在创建容器时传入。已有容器需要保留数据卷并重新创建，才能应用新的参数。远程访问还需要服务器防火墙允许客户端连接指定 API 端口。
+
+将 kubeconfig 保存到服务器上的受限文件，再复制到客户端：
+
+```shell
+umask 077
+docker exec kueue-k3s-server cat /etc/rancher/k3s/k3s.yaml > kubeconfig.yaml
+scp kubeconfig.yaml <client-host>:<client-kubeconfig-path>
+```
+
+在客户端将 kubeconfig 中的 `server` 改为 `https://<server-ip-or-dns>:6444`，保留 CA 和客户端证书。kubeconfig 包含集群管理员凭据，不应提交到 Git。客户端配置了 HTTP 代理时，将服务器地址加入 `NO_PROXY` 和 `no_proxy`，再执行：
+
+```shell
+kubectl --kubeconfig <client-kubeconfig-path> get nodes
+```
+
+## 存储与 CNI 故障排查
+
+k3s 默认使用 Flannel。节点出现 `NetworkPluginNotReady` 时，先检查数据挂载和 CNI 配置：
+
+```shell
+docker inspect kueue-k3s-server --format '{{range .Mounts}}{{.Type}} {{.Source}} -> {{.Destination}}{{println}}{{end}}'
+docker exec kueue-k3s-server ls -l /var/lib/rancher/k3s/agent/etc/cni/net.d
+docker exec kueue-k3s-server kubectl describe node kueue-k3s-server
+```
+
+不要将 `/var/lib/rancher/k3s` 挂载到宿主机的 `/tmp`、`/var/tmp`、`/run` 或 `/dev/shm`。这些目录可能被定期清理或在重启时清空，导致 CNI 配置或其他集群文件丢失。启动脚本会拒绝复用此类旧容器。
+
+旧集群需要保留数据时，先停止容器并备份数据目录，再迁移到持久化卷；确认迁移成功前保留原目录和容器配置。需要全新集群时，备份后删除旧容器，使用新的数据卷启动。删除容器不会修复已经丢失的集群文件，也不会自动迁移旧数据。
+
 ## 验证
 
 提交一个受 Kueue 管理的示例 Job：

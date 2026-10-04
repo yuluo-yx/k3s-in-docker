@@ -5,6 +5,9 @@ SERVER_DIR := $(CURDIR)
 SERVERS_DIR := $(abspath ..)
 K3S_IMAGE ?= registry.cn-hangzhou.aliyuncs.com/yuluo-yx/k3s:enhance
 K3S_API_PORT ?= 6444
+K3S_TLS_SAN ?=
+K3S_CPUS ?=
+K3S_MEMORY ?=
 KUEUE_VERSION ?= v0.19.0
 KUEUE_MANIFEST_URL := https://github.com/kubernetes-sigs/kueue/releases/download/$(KUEUE_VERSION)/manifests.yaml
 
@@ -15,6 +18,9 @@ deploy: server install configure ## 启动实例、安装 Kueue 并配置队列
 server: ## 启动 Kueue k3s 实例
 	K3S_SERVER_NAME=$(SERVER_NAME) \
 	K3S_API_PORT=$(K3S_API_PORT) \
+	K3S_TLS_SAN="$(K3S_TLS_SAN)" \
+	K3S_CPUS="$(K3S_CPUS)" \
+	K3S_MEMORY="$(K3S_MEMORY)" \
 	K3S_DATA_VOLUME=$(SERVER_NAME)-data \
 	K3S_IMAGE=$(K3S_IMAGE) \
 	bash $(SERVERS_DIR)/start-server.sh
